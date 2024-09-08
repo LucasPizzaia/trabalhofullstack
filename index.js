@@ -1,16 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Pessoa } = require('./models'); 
+const { Pessoa } = require('./models'); // Modelo Pessoa gerado pelo Sequelize
 
 const app = express();
 const port = 3000;
 
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public')); 
+app.use(express.static('public')); // Serve arquivos estáticos da pasta public
 
+// Rota para listar todas as pessoas
 app.get('/pessoas', async (req, res) => {
   try {
     const pessoas = await Pessoa.findAll();
@@ -20,6 +19,7 @@ app.get('/pessoas', async (req, res) => {
   }
 });
 
+// Rota para adicionar uma nova pessoa
 app.post('/pessoas', async (req, res) => {
   try {
     const { nome, cpf, telefone } = req.body;
@@ -30,6 +30,9 @@ app.post('/pessoas', async (req, res) => {
   }
 });
 
+// Inicializa o servidor
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
+
+
