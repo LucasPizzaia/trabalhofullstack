@@ -1,15 +1,15 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const { Pessoa } = require('./models'); // Modelo Pessoa gerado pelo Sequelize
+const { Pessoa } = require('./models'); 
 
 const app = express();
 const port = 3000;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public')); // Serve arquivos estáticos da pasta public
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public')); 
 
-// Rota para listar todas as pessoas
+Pessoa.sync();
+
 app.get('/pessoas', async (req, res) => {
   try {
     const pessoas = await Pessoa.findAll();
@@ -19,7 +19,6 @@ app.get('/pessoas', async (req, res) => {
   }
 });
 
-// Rota para adicionar uma nova pessoa
 app.post('/pessoas', async (req, res) => {
   try {
     const { nome, cpf, telefone } = req.body;
@@ -30,9 +29,27 @@ app.post('/pessoas', async (req, res) => {
   }
 });
 
-// Inicializa o servidor
+app.delete('/pessoas/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pessoa = await Pessoa.findByPk(id);
+
+    if (!pessoa) {
+      return res.status(404).json({ error: 'Pessoa não encontrada' });
+    }
+
+    await pessoa.destroy();
+    res.status(200).json({ message: 'Pessoa excluída com sucesso' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao excluir pessoa' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
+
+
 
 
